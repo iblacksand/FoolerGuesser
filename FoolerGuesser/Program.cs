@@ -8,6 +8,33 @@ using System.Threading.Tasks;
 
 namespace FoolerGuesser
 {
+    public class OutputCapture : TextWriter, IDisposable
+    {
+        private TextWriter stdOutWriter;
+        public TextWriter Captured { get; private set; }
+        public override Encoding Encoding { get { return Encoding.ASCII; } }
+
+        public OutputCapture()
+        {
+            this.stdOutWriter = Console.Out;
+            Console.SetOut(this);
+            Captured = new StringWriter();
+        }
+
+        override public void Write(string output)
+        {
+            // Capture the output and also send it to StdOut
+            Captured.Write(output);
+            stdOutWriter.Write(output);
+        }
+
+        override public void WriteLine(string output)
+        {
+            // Capture the output and also send it to StdOut
+            Captured.WriteLine(output);
+            stdOutWriter.WriteLine(output);
+        }
+    }
     class Program
     {
         List<Password> passwords = new List<Password>();
@@ -17,7 +44,7 @@ namespace FoolerGuesser
         private int correct;
         static void Main(string[] args)
         {
-            new Program();
+                new Program();
         }
         private static Random random = new Random();
         public static string RandomString(int length)
@@ -53,11 +80,10 @@ namespace FoolerGuesser
 
         public void runtest(int index)
         {
-            passwords = new List<Password>();
-            foreach (string pass in originList)
-            {
-                passwords.Add(new Password(pass));
-            }
+            //foreach (string pass in originList)
+            //{
+            //    passwords.Add(new Password(pass));
+            //}
             String originpass = originList[index];
             String obf = obcPass[index];
             for (int i = 0; i < passwords.Count; i++)
@@ -75,7 +101,12 @@ namespace FoolerGuesser
             string topchoice = sorted[0].password;
             //Console.WriteLine("with password " + obf + "top choices were " + sorted[0] + "\n" + sorted[1] + "\n" +
                               //sorted[2] + "\n" + sorted[3] + "\n" + sorted[4]);
-            if (topchoice.Equals(originpass)) correct++;
+            if (topchoice.Equals(originpass))
+            {
+                correct++;
+                Console.WriteLine(topchoice);
+            }
+            Console.WriteLine("Done");
             total++;
         }
     }
