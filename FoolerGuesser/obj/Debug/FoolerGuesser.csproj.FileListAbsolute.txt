@@ -1,0 +1,7 @@
+c:\users\user\documents\visual studio 2017\Projects\FoolerGuesser\FoolerGuesser\bin\Debug\toppasswords.txt
+c:\users\user\documents\visual studio 2017\Projects\FoolerGuesser\FoolerGuesser\bin\Debug\FoolerGuesser.exe.config
+c:\users\user\documents\visual studio 2017\Projects\FoolerGuesser\FoolerGuesser\bin\Debug\FoolerGuesser.exe
+c:\users\user\documents\visual studio 2017\Projects\FoolerGuesser\FoolerGuesser\bin\Debug\FoolerGuesser.pdb
+c:\users\user\documents\visual studio 2017\Projects\FoolerGuesser\FoolerGuesser\obj\Debug\FoolerGuesser.csprojResolveAssemblyReference.cache
+c:\users\user\documents\visual studio 2017\Projects\FoolerGuesser\FoolerGuesser\obj\Debug\FoolerGuesser.exe
+c:\users\user\documents\visual studio 2017\Projects\FoolerGuesser\FoolerGuesser\obj\Debug\FoolerGuesser.pdb
