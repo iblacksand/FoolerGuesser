@@ -37,14 +37,28 @@ namespace FoolerGuesser
     }
     class Program
     {
-        List<Password> passwords = new List<Password>();
-        List<string> originList = new List<string>();
+        static List<Password> passwords = new List<Password>();
+        static List<string> originList = new List<string>();
+        static StreamWriter w = new StreamWriter("table.csv");
         private List<string> obcPass = new List<string>();
+        static ProgressBar progress = new ProgressBar();
+        private List<int> devs;
         private int total;
         private int correct;
         static void Main(string[] args)
         {
-                new Program();
+            originList = new List<string>(File.ReadAllLines("toppasswords-100000.txt"));
+            foreach (string pass in originList)
+            {
+                passwords.Add(new Password(pass));
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                new Program(i);
+            }
+            Console.WriteLine("PRESS ENTER TO CLOSE");
+            Console.ReadLine();
         }
         private static Random random = new Random();
         public static string RandomString(int length)
@@ -54,19 +68,25 @@ namespace FoolerGuesser
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        public Program()
+        private double averg(List<int> x)
         {
-            originList = new List<string>(File.ReadAllLines("toppasswords.txt"));
-            foreach (string pass in originList)
-            {
-                passwords.Add(new Password(pass));
-            }
+            double avg = 0.0;
+            foreach (int i in x) avg += i;
+            return avg / x.Count;
+        }
+
+        public Program(int len)
+        {
+            obcPass = new List<string>();
+            devs = new List<int>();
+            if (len == 0) w.WriteLine("Random Insertion Length, Percent Correct, Average Position");
             foreach (string s in originList)
             {
                 string x = "";
                 for (int i = 0; i < s.Length; i++)
                 {
-                    x += s.ToCharArray()[i] + RandomString(random.Next(15) + 6);
+                    //x += s.ToCharArray()[i] + RandomString(random.Next(15) + 6);
+                    x += s.ToCharArray()[i] + RandomString(len);
                 }
                 obcPass.Add(x);
             }
@@ -74,8 +94,13 @@ namespace FoolerGuesser
             {
                 runtest(i);
             }
-            Console.WriteLine("Got " + correct + " out of " + total + "for a percentage of " + ((double)(correct)/(double)(total) * 100.0));
-            Console.ReadLine();
+            //Console.WriteLine("Got " + correct + " out of " + total + " for a percentage of " + ((double)(correct)/(double)(total) * 100.0));
+            //Console.ReadLine();
+            double avg = averg(devs);
+            w.WriteLine(len + "," + ((double)(correct) / (double)(total) * 100.0) + "," + avg);
+            w.Flush();
+            
+            progress.Report((double)len / 10);
         }
 
         public void runtest(int index)
@@ -97,16 +122,17 @@ namespace FoolerGuesser
             //    Console.WriteLine(sorted[i]);
             //}
             int pos = sorted.FindIndex(o => o.password == originpass);
+            devs.Add(pos);
             //Console.WriteLine("Got the position of " + pos + "with shared chars of " + passwords[pos].sharedChars);
             string topchoice = sorted[0].password;
             //Console.WriteLine("with password " + obf + "top choices were " + sorted[0] + "\n" + sorted[1] + "\n" +
-                              //sorted[2] + "\n" + sorted[3] + "\n" + sorted[4]);
+            //sorted[2] + "\n" + sorted[3] + "\n" + sorted[4]);
             if (topchoice.Equals(originpass))
             {
                 correct++;
-                Console.WriteLine(topchoice);
+                //Console.WriteLine(sorted[0]);
             }
-            Console.WriteLine("Done");
+            //Console.WriteLine("Correct Pos : " + pos + "\n" + sorted[0
             total++;
         }
     }
@@ -115,7 +141,7 @@ namespace FoolerGuesser
     {
         public string password;
         private bool[] marked;
-        public int sharedChars;
+        public double sharedChars;
         public Password(string password)
         {
             this.password = password;
@@ -126,7 +152,7 @@ namespace FoolerGuesser
 
         private void reset()
         {
-            sharedChars = 0;
+            sharedChars = 0.0;
             for (int i = 0; i < marked.Length; i++)
             {
                 marked[i] = false;
@@ -146,21 +172,24 @@ namespace FoolerGuesser
             for (int i = 0; i < password.Length; i++)
             {
                 string sub = password.ToCharArray()[i] + "";
-                
+                bool found = false;
                 for (int j = last; j < x.Length; j++)
                 {
                  string p = x.ToCharArray()[j] + "";
-                    if (check.Contains(j)){break;}
+                    //if (check.Contains(j)){break;}
                     if (p.Equals(sub))
                         {
                             sharedChars++;
                             
                             //check.Add(j);
-                            last = j;
+                            last = j + 1;
+                        found = true;
                             break;
                     }
                 }
+                if (!found) break;
             }
+            sharedChars = sharedChars / password.Length;
         }
     }
 }
